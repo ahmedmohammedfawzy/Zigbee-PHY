@@ -46,10 +46,8 @@
 //   Outputs:
 //     ready_to_recieve [0]    Ready signal to accept a new chirp symbol group.
 //     busy             [0]    High whenever the modulator is generating a chirp or gap.
-//     sample_valid     [0]    Asserted with each valid DAC sample tick (matches sample_ce).
 //     sample_real    [7:0]    8-bit signed In-Phase sample output.
 //     sample_imag    [7:0]    8-bit signed Quadrature sample output.
-//     group_done       [0]    1-cycle pulse marking completion of active chirps + gap.
 //
 // =============================================================================
 
@@ -69,10 +67,8 @@ module csk_modulator #(
 
   output logic ready_to_recieve,
   output logic busy,
-  output logic sample_valid,
   output logic signed [7:0] sample_real,
-  output logic signed [7:0] sample_imag,
-  output logic group_done
+  output logic signed [7:0] sample_imag
 );
 
   logic active;
@@ -202,19 +198,14 @@ module csk_modulator #(
     if (reset) begin
       active        <= 1'b0;
       pending_valid <= 1'b0;
-      sample_valid  <= 1'b0;
       sample_real   <= 8'sd0;
       sample_imag   <= 8'sd0;
-      group_done    <= 1'b0;
       sample_index  <= 9'd0;
       stored_odd    <= 1'b0;
       pending_odd   <= 1'b0;
       rp0 <= 2'd0; rp1 <= 2'd0; rp2 <= 2'd0; rp3 <= 2'd0;
       prp0 <= 2'd0; prp1 <= 2'd0; prp2 <= 2'd0; prp3 <= 2'd0;
     end else begin
-      sample_valid <= 1'b0;
-      group_done   <= 1'b0;
-
       if (!active) begin
         if (i_group_valid) begin
           load_current_from_input();
@@ -224,7 +215,6 @@ module csk_modulator #(
         end
       end else begin
         if (sample_ce) begin
-          sample_valid <= 1'b1;
 
           // Emit modulated sample during active chirp, zero during guard gap
           if (sample_index < 9'd152) begin
@@ -237,7 +227,6 @@ module csk_modulator #(
 
           // Group completion and queue progression
           if (at_final) begin
-            group_done   <= 1'b1;
             sample_index <= 9'd0;
             if (pending_valid) begin
               promote_pending();

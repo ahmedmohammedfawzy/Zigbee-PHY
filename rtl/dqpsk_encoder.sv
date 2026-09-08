@@ -54,19 +54,19 @@
 // Interface :
 //
 //   Inputs:
-//     clk             [0]    System clock.
-//     reset           [0]    Synchronous active-high system reset.
-//     init_packet     [0]    Synchronous pulse asserting at packet start to
-//                            initialize the 4-stage feedback memory to pi/4 (2'd0).
-//     in_valid        [0]    Handshake signal indicating valid input phase delta.
-//     accept          [0]    Downstream backpressure / ready qualification signal.
-//     in_phase      [1:0]    2-bit input phase delta (0=0 deg, 1=+90 deg, 2=+180 deg, 3=+270 deg)
+//     clk              [0]    System clock.
+//     reset            [0]    Synchronous active-high system reset.
+//     init_packet      [0]    Synchronous pulse asserting at packet start to
+//                             initialize the 4-stage feedback memory to pi/4 (2'd0).
+//     in_valid         [0]    Handshake signal indicating valid input phase delta.
+//     downstream_ready [0]    Downstream backpressure / ready qualification signal.
+//     in_phase       [1:0]    2-bit input phase delta (0=0 deg, 1=+90 deg, 2=+180 deg, 3=+270 deg)
 //                            from qpsk_mapper.
 //
 //   Outputs:
-//     out_valid       [0]    Asserted when a valid DQPSK phase symbol is produced.
-//     out_phase     [1:0]    2-bit transmitted diagonal phase index (0=pi/4, 1=3*pi/4,
-//                            2=5*pi/4, 3=7*pi/4) passed directly to CSK modulator.
+//     out_valid        [0]    Asserted when a valid DQPSK phase symbol is produced.
+//     out_phase      [1:0]    2-bit transmitted diagonal phase index (0=pi/4, 1=3*pi/4,
+//                             2=5*pi/4, 3=7*pi/4) passed directly to CSK modulator.
 //
 // =============================================================================
 
@@ -75,7 +75,7 @@ module dqpsk_encoder (
   input  logic       reset,
   input  logic       init_packet,
   input  logic       in_valid,
-  input  logic       accept,
+  input  logic       downstream_ready,
   input  logic [1:0] in_phase,
 
   output logic       out_valid,
@@ -91,7 +91,7 @@ module dqpsk_encoder (
   // ---------------------------------------------------------------------------
   // out_phase = (fb_phase + in_phase) mod 4
   // 2-bit unsigned addition wraps modulo-4 naturally.
-  assign out_valid = in_valid && accept;
+  assign out_valid = in_valid && downstream_ready;
   assign out_phase = fb_phase[tap_select] + in_phase;
 
   // ---------------------------------------------------------------------------

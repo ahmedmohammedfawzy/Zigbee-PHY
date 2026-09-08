@@ -28,8 +28,12 @@ module tx_controller(
   input  logic       start,            // pulse to begin a new transmission
   input  logic [7:0] payload_length,   // PSDU length in bytes (0-127)
   input  logic [7:0] payload_data,     // byte read from payload memory at payload_addr
+  input  logic       downstream_ready, // down stream pipeline ready to recieve new data
+
   output logic [6:0] payload_addr,     // byte address into payload memory
   output logic       done_Tx,          // 1-cycle pulse at end of transmission
+  output logic       busy,
+  output logic       chip_valid,       // shows chip is real data not garbage
   output logic       chip_i,           // serialized I-channel chip output
   output logic       chip_q            // serialized Q-channel chip output
 );
@@ -213,16 +217,22 @@ module tx_controller(
   //   default      -> idle / collecting: outputs held low
   // ---------------------------------------------------------------------
   always_comb begin
+    chip_valid = 1'b0;
+    busy = state != ST_IDLE;
+
     case (state)
       ST_SYNC: begin
+        chip_valid = sync_valid;
         chip_i = sync_chip;
         chip_q = sync_chip;
       end
       ST_EMIT_1M: begin
+        chip_valid = 1'b1;
         chip_i = cw_i_1m[3-emit_index];
         chip_q = cw_q_1m[3-emit_index];
       end
       ST_EMIT_250K: begin
+        chip_valid = 1'b1;
         chip_i = inter_i_out[63-emit_index];
         chip_q = inter_q_out[63-emit_index];
       end
@@ -280,12 +290,14 @@ module tx_controller(
        // to collecting the first symbol.
        // -----------------------------------------------------------------
        ST_SYNC: begin
-         if (!rate && sync_index == 47)
-           state <= ST_COLLECT_A;
-         else if (rate && sync_index == 95)
-           state <= ST_COLLECT_A;
-         else
-           sync_index <= sync_index + 7'd1;
+         if (downstream_ready) begin
+           if (!rate && sync_index == 47)
+             state <= ST_COLLECT_A;
+           else if (rate && sync_index == 95)
+             state <= ST_COLLECT_A;
+           else
+             sync_index <= sync_index + 7'd1;
+         end
        end
 
        // -----------------------------------------------------------------
@@ -341,13 +353,15 @@ module tx_controller(
        // symbol.
        // -----------------------------------------------------------------
        ST_EMIT_1M: begin
-         if (emit_index == 7'd3) begin
-           emit_index <= 7'd0;
-           if (pair_index >= total_pairs) begin
-             done_Tx <= 1'b1;
-             state <= ST_IDLE;
-           end else state <= ST_COLLECT_A;
-         end else emit_index <= emit_index + 7'd1;
+         if (downstream_ready) begin
+           if (emit_index == 7'd3) begin
+             emit_index <= 7'd0;
+             if (pair_index >= total_pairs) begin
+               done_Tx <= 1'b1;
+               state <= ST_IDLE;
+             end else state <= ST_COLLECT_A;
+           end else emit_index <= emit_index + 7'd1;
+         end
        end
 
        // -----------------------------------------------------------------
@@ -357,13 +371,15 @@ module tx_controller(
        // pair of symbols.
        // -----------------------------------------------------------------
        ST_EMIT_250K: begin
-         if (emit_index == 7'd63) begin
-           emit_index <= 7'd0;
-           if (pair_index >= total_pairs) begin
-             done_Tx <= 1'b1;
-             state <= ST_IDLE;
-           end else state <= ST_COLLECT_A;
-         end else emit_index <= emit_index + 7'd1;
+         if (downstream_ready) begin
+           if (emit_index == 7'd63) begin
+             emit_index <= 7'd0;
+             if (pair_index >= total_pairs) begin
+               done_Tx <= 1'b1;
+               state <= ST_IDLE;
+             end else state <= ST_COLLECT_A;
+           end else emit_index <= emit_index + 7'd1;
+         end
        end
 
        default: state <= ST_IDLE;
