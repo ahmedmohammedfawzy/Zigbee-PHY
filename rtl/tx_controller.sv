@@ -246,7 +246,7 @@ module tx_controller(
   // ---------------------------------------------------------------------
   // Main sequential FSM
   // ---------------------------------------------------------------------
-  always_ff @(posedge clk, posedge reset) begin
+  always_ff @(posedge clk) begin
    if (reset) begin
      // Async reset: clear all state and counters
      state <= ST_IDLE;
