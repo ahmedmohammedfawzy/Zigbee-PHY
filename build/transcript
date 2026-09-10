@@ -1,0 +1,114 @@
+# vsim -c -voptargs="+acc" work.tb_dqpsk_encoder -do "run -all; quit -f" 
+# Start time: 18:05:39 on Sep 10,2026
+# Loading sv_std.std
+# Loading work.tb_dqpsk_encoder
+# Loading work.dqpsk_encoder
+# run -all
+# 
+# ================================================================
+#   tb_dqpsk_encoder — DQPSK Encoder Testbench
+# ================================================================
+# 
+# --- First 4 symbols after reset (taps still at init value 0) ---
+#   PASS | sym0 delta=0         | delta=0 -> out_phase=0
+#   PASS | sym1 delta=1         | delta=1 -> out_phase=1
+#   PASS | sym2 delta=2         | delta=2 -> out_phase=2
+#   PASS | sym3 delta=3         | delta=3 -> out_phase=3
+# 
+# --- Wraparound: symbols 5-8 feed back through taps 0-3 ---
+#   PASS | sym4 delta=1 (tap0)  | delta=1 -> out_phase=1
+#   PASS | sym5 delta=2 (tap1)  | delta=2 -> out_phase=3
+#   PASS | sym6 delta=3 (tap2)  | delta=3 -> out_phase=1
+#   PASS | sym7 delta=0 (tap3)  | delta=0 -> out_phase=3
+# 
+# --- Long random sequence (40 symbols, no stalls) ---
+#   PASS | rand sym 0           | delta=3 -> out_phase=3
+#   PASS | rand sym 1           | delta=0 -> out_phase=0
+#   PASS | rand sym 2           | delta=0 -> out_phase=0
+#   PASS | rand sym 3           | delta=0 -> out_phase=0
+#   PASS | rand sym 4           | delta=0 -> out_phase=3
+#   PASS | rand sym 5           | delta=3 -> out_phase=3
+#   PASS | rand sym 6           | delta=2 -> out_phase=2
+#   PASS | rand sym 7           | delta=0 -> out_phase=0
+#   PASS | rand sym 8           | delta=0 -> out_phase=3
+#   PASS | rand sym 9           | delta=1 -> out_phase=0
+#   PASS | rand sym 10          | delta=0 -> out_phase=2
+#   PASS | rand sym 11          | delta=3 -> out_phase=3
+#   PASS | rand sym 12          | delta=1 -> out_phase=0
+#   PASS | rand sym 13          | delta=2 -> out_phase=2
+#   PASS | rand sym 14          | delta=0 -> out_phase=2
+#   PASS | rand sym 15          | delta=1 -> out_phase=0
+#   PASS | rand sym 16          | delta=2 -> out_phase=2
+#   PASS | rand sym 17          | delta=2 -> out_phase=0
+#   PASS | rand sym 18          | delta=0 -> out_phase=2
+#   PASS | rand sym 19          | delta=3 -> out_phase=3
+#   PASS | rand sym 20          | delta=2 -> out_phase=0
+#   PASS | rand sym 21          | delta=3 -> out_phase=3
+#   PASS | rand sym 22          | delta=2 -> out_phase=0
+#   PASS | rand sym 23          | delta=0 -> out_phase=3
+#   PASS | rand sym 24          | delta=1 -> out_phase=1
+#   PASS | rand sym 25          | delta=0 -> out_phase=3
+#   PASS | rand sym 26          | delta=3 -> out_phase=3
+#   PASS | rand sym 27          | delta=2 -> out_phase=1
+#   PASS | rand sym 28          | delta=3 -> out_phase=0
+#   PASS | rand sym 29          | delta=3 -> out_phase=2
+#   PASS | rand sym 30          | delta=2 -> out_phase=1
+#   PASS | rand sym 31          | delta=0 -> out_phase=1
+#   PASS | rand sym 32          | delta=0 -> out_phase=0
+#   PASS | rand sym 33          | delta=0 -> out_phase=2
+#   PASS | rand sym 34          | delta=2 -> out_phase=3
+#   PASS | rand sym 35          | delta=1 -> out_phase=2
+#   PASS | rand sym 36          | delta=2 -> out_phase=2
+#   PASS | rand sym 37          | delta=3 -> out_phase=1
+#   PASS | rand sym 38          | delta=2 -> out_phase=1
+#   PASS | rand sym 39          | delta=1 -> out_phase=3
+# 
+# --- Mid-stream init_packet re-initializes taps ---
+#   PASS | pre-init sym         | delta=2 -> out_phase=0
+#   PASS | post-init sym0 (should behave like fresh reset) | delta=1 -> out_phase=1
+#   PASS | post-init sym1       | delta=3 -> out_phase=3
+# 
+# --- Handshake: downstream_ready stalls ---
+#   PASS | stalled 3 cycles then accepted | delta=0 -> out_phase=0
+#   PASS | immediately accepted | delta=2 -> out_phase=2
+# 
+# --- Random sequence with random stalls (30 symbols) ---
+#   PASS | rand-stall sym 0     | delta=1 -> out_phase=1
+#   PASS | rand-stall sym 1     | delta=1 -> out_phase=1
+#   PASS | rand-stall sym 2     | delta=2 -> out_phase=2
+#   PASS | rand-stall sym 3     | delta=1 -> out_phase=1
+#   PASS | rand-stall sym 4     | delta=3 -> out_phase=0
+#   PASS | rand-stall sym 5     | delta=0 -> out_phase=1
+#   PASS | rand-stall sym 6     | delta=1 -> out_phase=3
+#   PASS | rand-stall sym 7     | delta=0 -> out_phase=1
+#   PASS | rand-stall sym 8     | delta=1 -> out_phase=1
+#   PASS | rand-stall sym 9     | delta=1 -> out_phase=2
+#   PASS | rand-stall sym 10    | delta=2 -> out_phase=1
+#   PASS | rand-stall sym 11    | delta=1 -> out_phase=2
+#   PASS | rand-stall sym 12    | delta=1 -> out_phase=2
+#   PASS | rand-stall sym 13    | delta=2 -> out_phase=0
+#   PASS | rand-stall sym 14    | delta=1 -> out_phase=2
+#   PASS | rand-stall sym 15    | delta=0 -> out_phase=2
+#   PASS | rand-stall sym 16    | delta=1 -> out_phase=3
+#   PASS | rand-stall sym 17    | delta=0 -> out_phase=0
+#   PASS | rand-stall sym 18    | delta=0 -> out_phase=2
+#   PASS | rand-stall sym 19    | delta=1 -> out_phase=3
+#   PASS | rand-stall sym 20    | delta=2 -> out_phase=1
+#   PASS | rand-stall sym 21    | delta=1 -> out_phase=1
+#   PASS | rand-stall sym 22    | delta=0 -> out_phase=2
+#   PASS | rand-stall sym 23    | delta=1 -> out_phase=0
+#   PASS | rand-stall sym 24    | delta=2 -> out_phase=3
+#   PASS | rand-stall sym 25    | delta=1 -> out_phase=2
+#   PASS | rand-stall sym 26    | delta=3 -> out_phase=1
+#   PASS | rand-stall sym 27    | delta=2 -> out_phase=2
+#   PASS | rand-stall sym 28    | delta=2 -> out_phase=1
+#   PASS | rand-stall sym 29    | delta=0 -> out_phase=2
+# 
+# ================================================================
+#   RESULT :  83 PASS    0 FAIL    (total 83)
+# ================================================================
+#   ALL TESTS PASSED
+# ** Note: $finish    : ../tb/tb_dqpsk_encoder.sv(197)
+#    Time: 2295 ns  Iteration: 1  Instance: /tb_dqpsk_encoder
+# End time: 18:05:40 on Sep 10,2026, Elapsed time: 0:00:01
+# Errors: 0, Warnings: 0
