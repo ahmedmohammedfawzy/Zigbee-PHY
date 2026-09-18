@@ -44,8 +44,6 @@ modulated baseband samples. Both supported data rates — 1 Mb/s and
                        ModelSim work library — see below)
 ```
 
----
-
 ## Verification Methodology
 
 RTL correctness is checked against an independent, bit-exact golden reference
@@ -125,3 +123,9 @@ iteration.
 - [ ] FPGA synthesis (resource utilization, timing)
 - [ ] On-board demonstration
 - [ ] Final written report
+
+
+## FPGA
+
+Added screenshots to Vivado schematic of the implemented RTL design, constrains file and "Tx_Top_Wrapper" file that 
+contains some modifications on the RTL to adjust the input and output ports to be proper to the FPGA resources
