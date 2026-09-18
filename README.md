@@ -124,6 +124,7 @@ iteration.
 - [ ] On-board demonstration
 - [ ] Final written report
 
+---
 
 ## FPGA
 
